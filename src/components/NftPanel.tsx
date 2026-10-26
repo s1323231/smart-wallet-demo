@@ -16,10 +16,10 @@ const DEFAULT_ERC721 = process.env.NEXT_PUBLIC_DEFAULT_ERC721_ADDRESS ?? "";
 const DEFAULT_ERC1155 = process.env.NEXT_PUBLIC_DEFAULT_ERC1155_ADDRESS ?? "";
 
 const inputCls =
-  "flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-xs placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
+  "flex-1 px-3 py-2 border border-line rounded-lg bg-surface text-ink font-mono text-xs placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent";
 
 const actionBtnCls =
-  "px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-50 rounded-lg text-sm transition-colors";
+  "px-4 py-2 bg-soft hover:bg-accent-disabled text-ink disabled:opacity-50 rounded-2xl text-sm transition-colors";
 
 type ContractEntry = {
   address: string;
@@ -31,7 +31,7 @@ type ContractEntry = {
 
 function NftCard({ token }: { token: NftToken }) {
   return (
-    <div className="border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-700">
+    <div className="border border-line rounded-xl overflow-hidden bg-soft">
       {token.metadata?.image ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -40,17 +40,17 @@ function NftCard({ token }: { token: NftToken }) {
           className="w-full aspect-square object-cover"
         />
       ) : (
-        <div className="w-full aspect-square bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-          <span className="text-gray-400 dark:text-gray-500 text-xs">No Image</span>
+        <div className="w-full aspect-square bg-soft flex items-center justify-center">
+          <span className="text-muted text-xs">No Image</span>
         </div>
       )}
       <div className="p-2 space-y-0.5">
-        <p className="text-xs font-medium text-gray-900 dark:text-white truncate">
+        <p className="text-xs font-medium text-ink truncate">
           {token.metadata?.name ?? `#${token.tokenId}`}
         </p>
-        <p className="text-xs text-gray-400 dark:text-gray-500">#{token.tokenId.toString()}</p>
+        <p className="text-xs text-muted">#{token.tokenId.toString()}</p>
         {token.balance !== undefined && (
-          <p className="text-xs text-gray-400 dark:text-gray-500">×{token.balance.toString()}</p>
+          <p className="text-xs text-muted">×{token.balance.toString()}</p>
         )}
       </div>
     </div>
@@ -66,14 +66,16 @@ function NftSection({
   label,
   defaultAddress,
   fetcher,
+  defaultOpen = false,
 }: {
   type: TokenType;
   label: string;
   defaultAddress: string;
+  defaultOpen?: boolean;
   fetcher: (contractAddr: Address, ownerAddr: Address) => Promise<{ tokens: NftToken[]; contractName?: string; contractSymbol?: string }>;
 }) {
   const { address: walletAddress } = useWallet();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [entries, setEntries] = useState<ContractEntry[]>([]);
   const [inputAddr, setInputAddr] = useState("");
 
@@ -182,20 +184,20 @@ function NftSection({
   const totalCount = entries.reduce((n, e) => n + e.tokens.length, 0);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-hidden">
+    <div className="bg-surface rounded-3xl border border-line shadow-soft overflow-hidden">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-soft transition-colors"
       >
-        <h2 className="font-semibold text-gray-900 dark:text-white">
+        <h2 className="ribbon-heading font-semibold text-ink">
           {label}
           {totalCount > 0 && (
-            <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-500">
+            <span className="ml-2 text-xs font-normal text-muted">
               {totalCount} 件
             </span>
           )}
         </h2>
-        <span className="text-gray-400 dark:text-gray-500 text-sm">{open ? "▲" : "▼"}</span>
+        <span className="text-muted text-sm">{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
@@ -204,17 +206,17 @@ function NftSection({
           {entries.map((entry) => (
             <div
               key={entry.address}
-              className="border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden"
+              className="border border-line rounded-xl overflow-hidden"
             >
-              <div className="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-700/50">
-                <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+              <div className="flex items-center justify-between px-3 py-2 bg-soft">
+                <span className="text-xs text-muted font-medium">
                   {entry.contractName
                     ? `${entry.contractName} (${shortAddr(entry.address)})`
                     : shortAddr(entry.address)}
                 </span>
                 <button
                   onClick={() => handleRemove(entry.address)}
-                  className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 text-xs px-1 transition-colors"
+                  className="text-muted hover:text-red-600 dark:hover:text-red-400 text-xs px-1 transition-colors"
                   title="このコントラクトを削除"
                 >
                   ✕
@@ -222,7 +224,7 @@ function NftSection({
               </div>
 
               {entry.isLoading && (
-                <p className="text-xs text-gray-400 dark:text-gray-500 px-3 py-3">取得中...</p>
+                <p className="text-xs text-muted px-3 py-3">取得中...</p>
               )}
               {entry.error && (
                 <p className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-3 py-2">
@@ -241,7 +243,7 @@ function NftSection({
 
           {/* 新しいコントラクトを追加 */}
           <div>
-            <label className="text-sm text-gray-500 dark:text-gray-400">コントラクトを追加</label>
+            <label className="text-sm text-muted">コントラクトを追加</label>
             <div className="flex gap-2 mt-1">
               <input
                 type="text"
@@ -266,12 +268,13 @@ function NftSection({
   );
 }
 
-export function NftPanel() {
+export function NftPanel({ defaultOpen = false }: { defaultOpen?: boolean }) {
   return (
     <>
       <NftSection
         type="erc721"
         label="ERC-721 NFT"
+        defaultOpen={defaultOpen}
         defaultAddress={DEFAULT_ERC721}
         fetcher={async (c, o) => {
           const r = await getErc721Tokens(c, o);
@@ -281,6 +284,7 @@ export function NftPanel() {
       <NftSection
         type="erc1155"
         label="ERC-1155 NFT"
+        defaultOpen={defaultOpen}
         defaultAddress={DEFAULT_ERC1155}
         fetcher={async (c, o) => {
           const r = await getErc1155Tokens(c, o);

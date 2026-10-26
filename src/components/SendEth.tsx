@@ -5,7 +5,7 @@ import { useWallet } from "@/hooks/useWallet";
 import { type Address } from "viem";
 
 const inputCls =
-  "w-full mt-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
+  "w-full mt-1 px-3 py-2 border border-line rounded-lg bg-surface text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent";
 
 export function SendEth() {
   const { sendEth, sendEthGasless } = useWallet();
@@ -34,11 +34,11 @@ export function SendEth() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 space-y-4">
-      <h2 className="font-semibold text-gray-900 dark:text-white">SepoliaETH 送金</h2>
+    <div className="bg-surface rounded-3xl border border-line shadow-soft p-6 space-y-4">
+      <h2 className="ribbon-heading font-semibold text-ink">SepoliaETH 送金</h2>
 
       <div>
-        <label className="text-sm text-gray-500 dark:text-gray-400">送り先アドレス</label>
+        <label className="text-sm text-muted">送り先アドレス</label>
         <input
           type="text"
           value={to}
@@ -49,7 +49,7 @@ export function SendEth() {
       </div>
 
       <div>
-        <label className="text-sm text-gray-500 dark:text-gray-400">金額 (SepoliaETH)</label>
+        <label className="text-sm text-muted">金額 (SepoliaETH)</label>
         <input
           type="number"
           value={amount}
@@ -69,7 +69,7 @@ export function SendEth() {
           onChange={(e) => setGasless(e.target.checked)}
           className="rounded"
         />
-        <label htmlFor="gasless" className="text-sm text-gray-700 dark:text-gray-300">
+        <label htmlFor="gasless" className="text-sm text-ink">
           Gasless 送金（Paymaster がガス代を負担）
         </label>
       </div>
@@ -87,7 +87,7 @@ export function SendEth() {
             href={`https://sepolia.etherscan.io/tx/${txHash}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-2 text-blue-600 dark:text-blue-400 hover:underline font-mono text-xs"
+            className="ml-2 text-accent hover:underline font-mono text-xs"
           >
             {txHash.slice(0, 10)}... Etherscan で確認 →
           </a>
@@ -97,7 +97,7 @@ export function SendEth() {
       <button
         onClick={handleSend}
         disabled={isLoading || !to || !amount}
-        className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 dark:disabled:bg-blue-900 text-white rounded-lg font-medium transition-colors"
+        className="w-full py-3 bg-accent hover:bg-accent-hover disabled:bg-accent-disabled disabled:text-disabled-ink text-accent-ink rounded-2xl font-medium transition-colors"
       >
         {isLoading ? "送金中..." : gasless ? "Gasless で送金" : "送金"}
       </button>

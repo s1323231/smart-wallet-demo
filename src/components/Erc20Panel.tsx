@@ -14,10 +14,10 @@ import { formatUnits, parseUnits, type Address } from "viem";
 const DEFAULT_ADDRESS = process.env.NEXT_PUBLIC_DEFAULT_ERC20_ADDRESS ?? "";
 
 const inputCls =
-  "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500";
+  "w-full px-3 py-2 border border-line rounded-lg bg-surface text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent";
 
 const actionBtnCls =
-  "px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-50 rounded-lg text-sm transition-colors";
+  "px-4 py-2 bg-soft hover:bg-accent-disabled text-ink disabled:opacity-50 rounded-2xl text-sm transition-colors";
 
 type TokenEntry = {
   address: string;
@@ -201,44 +201,44 @@ export function Erc20Panel() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-hidden">
+    <div className="bg-surface rounded-3xl border border-line shadow-soft overflow-hidden">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-soft transition-colors"
       >
-        <h2 className="font-semibold text-gray-900 dark:text-white">
+        <h2 className="ribbon-heading font-semibold text-ink">
           ERC-20 トークン
           {tokens.filter((t) => !t.isLoading && t.balance).length > 0 && (
-            <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-500">
+            <span className="ml-2 text-xs font-normal text-muted">
               {tokens.filter((t) => !t.isLoading && t.balance).length} 種
             </span>
           )}
         </h2>
-        <span className="text-gray-400 dark:text-gray-500 text-sm">{open ? "▲" : "▼"}</span>
+        <span className="text-muted text-sm">{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
         <div className="px-6 pb-6 space-y-4">
           {/* トークン一覧 */}
           {tokens.length > 0 && (
-            <div className="divide-y divide-gray-100 dark:divide-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden">
+            <div className="divide-y divide-line border border-line rounded-xl overflow-hidden">
               {tokens.map((t) => (
                 <div
                   key={t.address}
                   onClick={() => !t.isLoading && !t.error && setSelectedToken(t)}
                   className={`flex items-center justify-between px-4 py-3 transition-colors ${
                     !t.isLoading && !t.error
-                      ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      ? "cursor-pointer hover:bg-soft/50"
                       : ""
                   } ${
                     selectedToken?.address.toLowerCase() === t.address.toLowerCase()
-                      ? "bg-blue-50 dark:bg-blue-900/20"
+                      ? "bg-soft"
                       : ""
                   }`}
                 >
                   <div className="flex-1 min-w-0">
                     {t.isLoading ? (
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                      <span className="text-xs text-muted">
                         {shortAddr(t.address)} 取得中...
                       </span>
                     ) : t.error ? (
@@ -247,13 +247,13 @@ export function Erc20Panel() {
                       </span>
                     ) : (
                       <>
-                        <span className="text-base font-bold text-gray-900 dark:text-white">
+                        <span className="text-base font-bold text-ink">
                           {t.balance}
                         </span>
-                        <span className="ml-1 text-sm text-gray-400 dark:text-gray-500">
+                        <span className="ml-1 text-sm text-muted">
                           {t.symbol}
                         </span>
-                        <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
+                        <span className="ml-2 text-xs text-muted">
                           {shortAddr(t.address)}
                         </span>
                       </>
@@ -264,7 +264,7 @@ export function Erc20Panel() {
                       e.stopPropagation();
                       handleRemove(t.address);
                     }}
-                    className="ml-2 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 text-xs transition-colors"
+                    className="ml-2 text-muted hover:text-red-600 dark:hover:text-red-400 text-xs transition-colors"
                     title="削除"
                   >
                     ✕
@@ -276,12 +276,12 @@ export function Erc20Panel() {
 
           {/* 送金フォーム（トークン選択時に表示） */}
           {selectedToken && !selectedToken.isLoading && !selectedToken.error && (
-            <div className="space-y-3 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="space-y-3 border border-line rounded-xl p-4">
+              <p className="text-sm font-medium text-ink">
                 {selectedToken.symbol} を送金
               </p>
               <div>
-                <label className="text-sm text-gray-500 dark:text-gray-400">送り先アドレス</label>
+                <label className="text-sm text-muted">送り先アドレス</label>
                 <input
                   type="text"
                   value={to}
@@ -291,7 +291,7 @@ export function Erc20Panel() {
                 />
               </div>
               <div>
-                <label className="text-sm text-gray-500 dark:text-gray-400">
+                <label className="text-sm text-muted">
                   送金額 ({selectedToken.symbol})
                 </label>
                 <input
@@ -314,7 +314,7 @@ export function Erc20Panel() {
                     href={`https://sepolia.etherscan.io/tx/${txHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ml-2 text-blue-600 dark:text-blue-400 hover:underline font-mono text-xs"
+                    className="ml-2 text-accent hover:underline font-mono text-xs"
                   >
                     Etherscan で確認 →
                   </a>
@@ -323,7 +323,7 @@ export function Erc20Panel() {
               <button
                 onClick={handleTransfer}
                 disabled={sendLoading || !to || !amount}
-                className="w-full py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 dark:disabled:bg-purple-900 text-white rounded-lg font-medium transition-colors"
+                className="w-full py-3 bg-accent hover:bg-accent-hover disabled:bg-accent-disabled disabled:text-disabled-ink text-accent-ink rounded-2xl font-medium transition-colors"
               >
                 {sendLoading ? "送信中..." : `${selectedToken.symbol} を送金 (Gasless)`}
               </button>
@@ -332,7 +332,7 @@ export function Erc20Panel() {
 
           {/* 新しいトークンを追加 */}
           <div>
-            <label className="text-sm text-gray-500 dark:text-gray-400">トークンを追加</label>
+            <label className="text-sm text-muted">トークンを追加</label>
             <div className="flex gap-2 mt-1">
               <input
                 type="text"

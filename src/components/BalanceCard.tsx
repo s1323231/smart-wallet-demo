@@ -32,17 +32,17 @@ export function BalanceCard() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 space-y-2">
-      <div className="text-sm text-gray-500 dark:text-gray-400">Smart Account アドレス</div>
+    <div className="bg-surface rounded-3xl border border-line shadow-soft p-6 space-y-2">
+      <div className="text-sm text-muted">Smart Account アドレス</div>
       <div className="flex items-center gap-2">
-        <div className="font-mono text-xs text-gray-700 dark:text-gray-200 break-all flex-1">{address}</div>
+        <div className="font-mono text-xs text-ink break-all flex-1">{address}</div>
         <button
           onClick={copyAddress}
           title={copied ? "コピーしました" : "アドレスをコピー"}
           className={`shrink-0 p-1.5 rounded transition-colors ${
             copied
               ? "text-green-500 dark:text-green-400"
-              : "text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+              : "text-muted hover:text-accent"
           }`}
         >
           {copied ? <IconCheck /> : <IconClipboard />}
@@ -52,17 +52,17 @@ export function BalanceCard() {
         href={`https://sepolia.etherscan.io/address/${address}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block text-xs text-blue-600 dark:text-blue-400 hover:underline"
+        className="inline-block text-xs text-accent hover:underline"
       >
         Sepolia Etherscan ↗
       </a>
-      <div className="text-sm text-gray-500 dark:text-gray-400 pt-2">残高</div>
-      <div className="text-3xl font-bold text-gray-900 dark:text-white">
-        {balance ?? "—"} <span className="text-lg font-normal text-gray-400 dark:text-gray-500">SepoliaETH</span>
+      <div className="text-sm text-muted pt-2">残高</div>
+      <div className="text-3xl font-bold text-ink">
+        {balance ?? "—"} <span className="text-lg font-normal text-muted">SepoliaETH</span>
       </div>
       <button
         onClick={refreshBalance}
-        className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        className="text-sm text-accent hover:underline"
       >
         更新
       </button>

@@ -28,7 +28,7 @@ export default function RootLayout({
       lang="ja"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-gray-50 dark:bg-gray-900">
+      <body className="min-h-full bg-background text-foreground">
         <WalletProvider>{children}</WalletProvider>
       </body>
     </html>

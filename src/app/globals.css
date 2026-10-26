@@ -1,26 +1,146 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --background: #fff7fa;
+  --foreground: #493640;
+  --surface: #ffffff;
+  --soft: #fce7ef;
+  --muted: #735963;
+  --line: #efc7d7;
+  --field-border: #ae6c86;
+  --accent: #a93665;
+  --accent-hover: #8e2854;
+  --accent-ink: #ffffff;
+  --accent-disabled: #efd3df;
+  --disabled-ink: #72515f;
+  --card-shadow: 0 8px 28px -16px rgb(169 54 101 / 24%);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-soft: var(--soft);
+  --color-ink: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-disabled: var(--accent-disabled);
+  --color-disabled-ink: var(--disabled-ink);
+  --shadow-soft: var(--card-shadow);
+  --font-sans: var(--font-geist-sans), "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: dark;
+    --background: #281b23;
+    --foreground: #fcebf2;
+    --surface: #38252f;
+    --soft: #4c303e;
+    --muted: #d5b5c3;
+    --line: #795064;
+    --field-border: #bd8ba4;
+    --accent: #f3a8c6;
+    --accent-hover: #ffd0e2;
+    --accent-ink: #38252f;
+    --accent-disabled: #5c3a4a;
+    --disabled-ink: #d5b5c3;
+    --card-shadow: 0 8px 28px -16px rgb(0 0 0 / 40%);
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse at 8% 0%, color-mix(in srgb, var(--soft) 85%, transparent), transparent 45%),
+    radial-gradient(ellipse at 95% 45%, color-mix(in srgb, var(--soft) 65%, transparent), transparent 40%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  line-height: 1.7;
+}
+
+.app-shell { isolation: isolate; }
+.app-header {
+  position: relative;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 1.5rem;
+  box-shadow: var(--card-shadow);
+}
+.diary-intro {
+  position: relative;
+  padding: 1rem 0.75rem 0.5rem;
+  text-align: center;
+}
+.diary-intro::before,
+.diary-intro::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  background: var(--line);
+}
+.diary-intro::before {
+  width: 0.8rem;
+  height: 0.8rem;
+  left: 0.5rem;
+  top: 1.3rem;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 94%, 50% 72%, 21% 94%, 32% 57%, 2% 35%, 39% 35%);
+}
+.diary-intro::after {
+  width: 0.75rem;
+  height: 0.75rem;
+  right: 0.6rem;
+  bottom: 0.8rem;
+  transform: rotate(12deg);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21 3 12C-3 4 7-1 12 6c5-7 15-2 9 6Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.ribbon-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  line-height: 1.5;
+}
+.ribbon-heading::before {
+  content: "";
+  flex: 0 0 1.35rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  background: var(--accent);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M14 14C10 6 2 4 2 12s8 10 12 5L8 29l7-3 1-8 1 8 7 3-6-12c4 5 12 3 12-5S22 6 18 14Z'/%3E%3Ccircle cx='16' cy='15' r='4'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.app-shell button {
+  min-height: 2.75rem;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.app-shell button:disabled { cursor: not-allowed; }
+.app-shell input:not([type="checkbox"]) {
+  min-height: 2.75rem;
+  border-radius: 0.875rem;
+  border-color: var(--field-border);
+}
+.app-shell input[type="checkbox"] { accent-color: var(--accent); }
+.app-shell button:focus-visible,
+.app-shell a:focus-visible,
+.app-shell input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.app-shell [role="dialog"] {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: 1.25rem;
+  box-shadow: var(--card-shadow);
+}
+.app-shell [role="dialog"] dt { font-weight: 600; }
+.app-shell [role="dialog"] dd { margin-top: 0.15rem; }
+@media (prefers-reduced-motion: reduce) {
+  .app-shell button { transition: none; }
 }
