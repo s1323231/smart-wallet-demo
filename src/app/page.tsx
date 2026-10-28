@@ -7,6 +7,7 @@ import { BalanceCard } from "@/components/BalanceCard";
 import { SendEth } from "@/components/SendEth";
 import { Erc20Panel } from "@/components/Erc20Panel";
 import { NftPanel } from "@/components/NftPanel";
+import { EventRegistrationForm } from "@/components/EventRegistrationForm";
 import { EventRecords } from "@/components/EventRecords";
 import { JpycPanel } from "@/components/JpycPanel";
 
@@ -27,7 +28,7 @@ function Logo() {
 }
 
 export default function Home() {
-  const { isInitialized, isConnected, address } = useWallet();
+  const { isInitialized, isConnected, address, error } = useWallet();
 
   return (
     <main className={`app-shell ${isConnected ? "max-w-5xl" : "max-w-lg"} mx-auto px-4 py-8 space-y-6`}>
@@ -45,7 +46,9 @@ export default function Home() {
         <p className="mt-2 text-sm text-muted">小さなときめきを、ひとつずつ。</p>
       </div>
 
-      {!isInitialized && (
+      {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+
+      {!isInitialized && !error && (
         <div className="text-center py-12 text-muted">初期化中...</div>
       )}
 
@@ -64,10 +67,16 @@ export default function Home() {
           <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
             <div className="min-w-0 space-y-3">
               <div className="px-1">
-                <h2 className="text-lg font-semibold text-accent">思い出の記録</h2>
-                <p className="text-sm text-muted">参加したLIVEやイベントを振り返ろう。</p>
+                <h2 className="text-lg font-semibold text-accent">イベント参加登録</h2>
+                <p className="text-sm text-muted">参加するイベントを確認して、かんたんに登録。</p>
               </div>
-              {address && <EventRecords key={address.toLowerCase()} address={address} />}
+              {address && <EventRegistrationForm key={address.toLowerCase()} />}
+              {address && (
+                <details className="rounded-3xl border border-line bg-surface p-5 shadow-soft">
+                  <summary className="cursor-pointer text-sm font-semibold text-accent">これまでの参加記録</summary>
+                  <div className="mt-4"><EventRecords key={address.toLowerCase()} address={address} /></div>
+                </details>
+              )}
             </div>
             <div className="min-w-0 space-y-3">
               <div className="px-1">

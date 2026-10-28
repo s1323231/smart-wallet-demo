@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "event:compile": "node scripts/compile-event.mjs",
+    "event:test": "node --test tests/eventRewards.test.mjs tests/eventRewardsClient.test.mjs",
+    "event:deploy": "node --env-file=.env.local scripts/deploy-event.mjs --deploy"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.14",
@@ -22,6 +25,7 @@
     "wagmi": "^3.6.16"
   },
   "devDependencies": {
+    "@openzeppelin/contracts": "5.4.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -29,6 +33,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "fake-indexeddb": "^6.2.6",
+    "ganache": "7.9.2",
+    "solc": "0.8.30",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

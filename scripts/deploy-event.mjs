@@ -1,0 +1,20 @@
+import { createPublicClient, createWalletClient, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { sepolia } from 'viem/chains';
+import { compileEvent } from './compile-event.mjs';
+
+if (!process.argv.includes('--deploy')) throw new Error('Use --deploy to explicitly deploy to Sepolia.');
+const key = process.env.EVENT_DEPLOYER_PRIVATE_KEY;
+const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
+if (!key || !/^0x[0-9a-fA-F]{64}$/.test(key) || !apiKey) throw new Error('Set EVENT_DEPLOYER_PRIVATE_KEY and NEXT_PUBLIC_ALCHEMY_API_KEY in .env.local.');
+const transport = http(`https://eth-sepolia.g.alchemy.com/v2/${apiKey}`);
+const publicClient = createPublicClient({ chain: sepolia, transport });
+if (await publicClient.getChainId() !== sepolia.id) throw new Error('Sepolia required.');
+const wallet = createWalletClient({ account: privateKeyToAccount(key), chain: sepolia, transport });
+const artifact = compileEvent()['EventRewards.sol'].EventRewards;
+const hash = await wallet.deployContract({ abi: artifact.abi, bytecode: `0x${artifact.evm.bytecode.object}`, args: ['0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29'] });
+console.log('Deployment transaction:', hash);
+const receipt = await publicClient.waitForTransactionReceipt({ hash });
+if (receipt.status !== 'success' || !receipt.contractAddress) throw new Error('Deployment failed.');
+console.log('NEXT_PUBLIC_EVENT_REWARDS_ADDRESS=' + receipt.contractAddress);
+console.log('Next: fund this contract with test JPYC, configure the Paymaster, and restart the app.');

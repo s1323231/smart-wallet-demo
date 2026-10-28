@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Inapp Wallet — Sepolia",
-  description: "ERC-4337 Account Abstraction wallet demo on Sepolia",
+  title: "Inapp Wallet — LIVEの思い出",
+  description: "Googleログインで利用できるSepoliaウォレットに、イベント参加登録を追加した研究用アプリです。",
 };
 
 export default function RootLayout({

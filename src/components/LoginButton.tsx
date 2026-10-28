@@ -2,15 +2,15 @@
 
 import { useWallet } from "@/hooks/useWallet";
 
-export function LoginButton() {
+export function LoginButton({ showAddress = true }: { showAddress?: boolean }) {
   const { isConnected, isLoading, login, logout, address } = useWallet();
 
   if (isConnected && address) {
     return (
       <div className="flex items-center gap-3">
-        <span className="text-sm text-muted font-mono">
+        {showAddress && <span className="text-sm text-muted font-mono">
           {address.slice(0, 6)}...{address.slice(-4)}
-        </span>
+        </span>}
         <button
           onClick={logout}
           className="px-4 py-2 text-sm text-ink bg-soft hover:bg-accent-disabled rounded-lg transition-colors"
