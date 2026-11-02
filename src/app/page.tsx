@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useWallet } from "@/hooks/useWallet";
 import { LoginButton } from "@/components/LoginButton";
 import { BalanceCard } from "@/components/BalanceCard";
@@ -10,6 +10,7 @@ import { NftPanel } from "@/components/NftPanel";
 import { EventRegistrationForm } from "@/components/EventRegistrationForm";
 import { EventRecords } from "@/components/EventRecords";
 import { JpycPanel } from "@/components/JpycPanel";
+import { EventDeploymentPanel } from "@/components/EventDeploymentPanel";
 
 function Logo() {
   const [error, setError] = useState(false);
@@ -29,6 +30,8 @@ function Logo() {
 
 export default function Home() {
   const { isInitialized, isConnected, address, error } = useWallet();
+  const [rewardRevision, setRewardRevision] = useState(0);
+  const onRegistered = useCallback(() => setRewardRevision((value) => value + 1), []);
 
   return (
     <main className={`app-shell ${isConnected ? "max-w-5xl" : "max-w-lg"} mx-auto px-4 py-8 space-y-6`}>
@@ -70,7 +73,7 @@ export default function Home() {
                 <h2 className="text-lg font-semibold text-accent">イベント参加登録</h2>
                 <p className="text-sm text-muted">参加するイベントを確認して、かんたんに登録。</p>
               </div>
-              {address && <EventRegistrationForm key={address.toLowerCase()} />}
+              {address && <EventRegistrationForm key={address.toLowerCase()} address={address} onRegistered={onRegistered} />}
               {address && (
                 <details className="rounded-3xl border border-line bg-surface p-5 shadow-soft">
                   <summary className="cursor-pointer text-sm font-semibold text-accent">これまでの参加記録</summary>
@@ -83,12 +86,13 @@ export default function Home() {
                 <h2 className="text-lg font-semibold text-accent">NFTコレクション</h2>
                 <p className="text-sm text-muted">ウォレットに届いたNFTを並べて楽しもう。</p>
               </div>
-              <NftPanel defaultOpen />
+              <NftPanel key={`${address}:${rewardRevision}`} defaultOpen />
             </div>
           </div>
           <div className="mx-auto max-w-lg space-y-4">
             <BalanceCard />
-            {address && <JpycPanel key={address.toLowerCase()} address={address} />}
+            {address && <JpycPanel key={`${address.toLowerCase()}:${rewardRevision}`} address={address} />}
+            {address && <EventDeploymentPanel key={address.toLowerCase()} address={address} />}
             <SendEth />
             <Erc20Panel />
           </div>

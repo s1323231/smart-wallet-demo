@@ -7,7 +7,7 @@ export function compileEvent(extraSources = {}) {
   const input = {
     language: 'Solidity',
     sources: { 'EventRewards.sol': { content: fs.readFileSync('contracts/EventRewards.sol', 'utf8') }, ...extraSources },
-    settings: { optimizer: { enabled: true, runs: 200 }, evmVersion: 'shanghai', outputSelection: { '*': { '*': ['abi', 'evm.bytecode.object'] } } },
+    settings: { optimizer: { enabled: true, runs: 200 }, evmVersion: 'shanghai', outputSelection: { '*': { '*': ['abi', 'evm.bytecode.object', 'evm.deployedBytecode.object', 'evm.deployedBytecode.immutableReferences'] } } },
   };
   const output = JSON.parse(solc.compile(JSON.stringify(input), {
     import: (name) => {

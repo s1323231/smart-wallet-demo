@@ -1,5 +1,6 @@
 import { parseAbi, type Address } from "viem";
 import { publicClient } from "./smartAccount";
+import { EVENT_ADDRESS } from "./eventRewards";
 
 export const ERC721_ABI = parseAbi([
   "function name() view returns (string)",
@@ -7,6 +8,8 @@ export const ERC721_ABI = parseAbi([
   "function balanceOf(address owner) view returns (uint256)",
   "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
   "function tokenURI(uint256 tokenId) view returns (string)",
+  "function certificateOf(address owner) view returns (uint256)",
+  "function ownerOf(uint256 tokenId) view returns (address)",
 ]);
 
 export const ERC1155_ABI = parseAbi([
@@ -115,6 +118,18 @@ export async function getErc721Tokens(
       .readContract({ address: contractAddress, abi: ERC721_ABI, functionName: "symbol" })
       .catch(() => ""),
   ]);
+
+  // The event certificate is known by registration ID, without waiting for NFT indexing.
+  if (EVENT_ADDRESS && contractAddress.toLowerCase() === EVENT_ADDRESS.toLowerCase() && balance === BigInt(1)) {
+    const id = await publicClient.readContract({ address: contractAddress, abi: ERC721_ABI, functionName: "certificateOf", args: [ownerAddress] });
+    if (id > BigInt(0)) {
+      const owner = await publicClient.readContract({ address: contractAddress, abi: ERC721_ABI, functionName: "ownerOf", args: [id] });
+      if (owner.toLowerCase() === ownerAddress.toLowerCase()) {
+        const uri = await publicClient.readContract({ address: contractAddress, abi: ERC721_ABI, functionName: "tokenURI", args: [id] });
+        return { tokens: [{ tokenId: id, tokenURI: uri, metadata: await fetchTokenMetadata(uri) }], contractName, contractSymbol };
+      }
+    }
+  }
 
   // ERC721Enumerable を試みる（eth_call なので Alchemy 制限なし）
   const tokenIds: bigint[] = [];

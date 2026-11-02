@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "event:compile": "node scripts/compile-event.mjs",
-    "event:test": "node --test tests/eventRewards.test.mjs tests/eventRewardsClient.test.mjs",
+    "event:artifact": "node scripts/generate-event-deployment.mjs",
+    "event:test": "node --test tests/eventRewards.test.mjs tests/eventRewardsClient.test.mjs tests/eventDeployment.test.mjs",
     "event:deploy": "node --env-file=.env.local scripts/deploy-event.mjs --deploy"
   },
   "dependencies": {

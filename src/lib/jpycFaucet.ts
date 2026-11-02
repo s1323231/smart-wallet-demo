@@ -96,7 +96,8 @@ async function confirmResult(client: SmartClient, record: ClaimRecord, wait: boo
     ? await client.waitForUserOperationReceipt({ hash: record.operationHash, timeout: 120_000 })
     : await client.getUserOperationReceipt({ hash: record.operationHash });
   if (!result) throw new Error("結果未確定です。ロックを維持します。");
-  if (result.sender.toLowerCase() !== record.owner.toLowerCase() || result.nonce.toString() !== record.nonce) throw new Error("取得結果のSmart Accountまたはnonceが一致しません。");
+  // RPCのnonceは16進文字列の場合がある。Numberを使わず、大きな値も正確に照合する。
+  if (result.sender.toLowerCase() !== record.owner.toLowerCase() || BigInt(result.nonce).toString() !== record.nonce) throw new Error("取得結果のSmart Accountまたはnonceが一致しません。");
   if (!result.success || result.receipt.status !== "success") {
     await updateClaim(record, { status: "failed", transactionHash: result.receipt.transactionHash });
     throw new Error("取得処理の失敗を確認しました。成功表示は行いません。");

@@ -11,6 +11,7 @@ import {
   type TokenType,
 } from "@/lib/contractHistory";
 import type { Address } from "viem";
+import { EVENT_ADDRESS } from "@/lib/eventRewards";
 
 const DEFAULT_ERC721 = process.env.NEXT_PUBLIC_DEFAULT_ERC721_ADDRESS ?? "";
 const DEFAULT_ERC1155 = process.env.NEXT_PUBLIC_DEFAULT_ERC1155_ADDRESS ?? "";
@@ -124,8 +125,8 @@ function NftSection({
             isLoading: false,
             tokens: result.tokens,
             contractName:
-              (result as any).contractName ||
-              (result as any).contractSymbol ||
+              result.contractName ||
+              result.contractSymbol ||
               "",
           });
         }
@@ -143,6 +144,8 @@ function NftSection({
   // ログイン時に保存済みコントラクトを自動取得
   useEffect(() => {
     if (!walletAddress) {
+      // Reset the view when the external wallet session disconnects.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEntries([]);
       return;
     }
@@ -150,6 +153,9 @@ function NftSection({
     // 環境変数のデフォルトアドレスが未登録なら履歴に追加
     if (defaultAddress && !hasContract(type, defaultAddress)) {
       addContract(type, defaultAddress);
+    }
+    if (type === "erc721" && EVENT_ADDRESS && !hasContract(type, EVENT_ADDRESS)) {
+      addContract(type, EVENT_ADDRESS);
     }
 
     const stored = getContracts(type);

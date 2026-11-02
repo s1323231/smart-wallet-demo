@@ -100,6 +100,32 @@ test('strips stub signature and verifies receipt transfer before returning', asy
   assert.equal(f.counts().submittedSignature, undefined);
   assert.equal(f.counts().sends, 1);
 });
+test('hex receipt nonce matches the saved decimal nonce without losing precision', async () => {
+  const f = fixture();
+  f.operation.nonce = 33085931018829054501371884077056n;
+  const receipt = await f.client.waitForUserOperationReceipt();
+  f.client.waitForUserOperationReceipt = async () => ({ ...receipt, nonce: '0x1a19a68afe20000000000000000' });
+  assert.equal(await f.faucet.claimJpyc(f.client, owner, () => {}, () => true), hash);
+  assert.equal(f.getRecord().nonce, '33085931018829054501371884077056');
+  assert.equal(f.getRecord().status, 'success');
+});
+for (const mismatch of [false, true]) test(`saved unknown claim with hex receipt nonce ${mismatch ? 'rejects a different nonce' : 'recovers without resending'}`, async () => {
+  const f = fixture();
+  const nonce = 33085931018829054501371884077056n;
+  f.operation.nonce = nonce;
+  const receipt = await f.client.waitForUserOperationReceipt();
+  f.client.waitForUserOperationReceipt = async () => { throw Error('timeout'); };
+  await assert.rejects(f.faucet.claimJpyc(f.client, owner, () => {}, () => true), /timeout/);
+  f.client.getUserOperationReceipt = async () => ({ ...receipt, nonce: `0x${(nonce + (mismatch ? 1n : 0n)).toString(16)}` });
+  if (mismatch) {
+    await assert.rejects(f.faucet.recoverJpycClaim(f.client, owner), /nonceが一致しません/);
+    assert.equal(f.getRecord().status, 'unknown');
+  } else {
+    assert.equal((await f.faucet.recoverJpycClaim(f.client, owner)).status, 'success');
+    assert.equal(f.getRecord().transactionHash, hash);
+  }
+  assert.equal(f.counts().sends, 1);
+});
 test('failed UserOperation never returns success', async () => {
   const f = fixture(); f.client.waitForUserOperationReceipt = async () => ({ success: false, sender: owner, nonce: 0n, receipt: { status: 'success', transactionHash: hash } });
   await assert.rejects(f.faucet.claimJpyc(f.client, owner, () => {}, () => true), /失敗/);
